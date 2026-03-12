@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 
 # Installer Rust et les cibles Android
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain stable && \
-    . "$HOME/.cargo/env" && \
+    . "/root/.cargo/env" && \
     rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android
 
 # Installer Tauri CLI globalement

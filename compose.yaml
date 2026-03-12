@@ -1,0 +1,60 @@
+name: github-runners
+services:
+  runner-client:
+    image: ghcr.io/bobdivx/popcorn-github-runner-server:latest
+    container_name: github-runner-client
+    environment:
+      - ACCESS_TOKEN=${ACCESS_TOKEN_CLIENT}
+      - ANDROID_HOME=/opt/android-sdk
+      - ANDROID_SDK_ROOT=/opt/android-sdk
+      - PATH=/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/tools:/opt/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - REPO_URL=https://github.com/bobdivx/popcorn-client
+      - RUNNER_NAME=casaos-runner-popcorn-client
+      - RUNNER_REPLACE_EXISTING=true
+      - TZ=Europe/Paris
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /media/Docker/AppData/runner/client:/shared-data
+      - /media/Docker/AppData/runner/npm:/home/runner/.npm
+      - /media/Docker/AppData/runner/cargo:/home/runner/.cargo
+      - /media/Docker/AppData/runner/rustup:/home/runner/.rustup
+      - /media/Docker/AppData/runner/registry:/opt/cargo/registry
+    restart: unless-stopped
+    privileged: true
+
+  runner-server:
+    image: ghcr.io/bobdivx/popcorn-github-runner-server:latest
+    container_name: github-runner-server
+    environment:
+      - ACCESS_TOKEN=${ACCESS_TOKEN_SERVER}
+      - REPO_URL=https://github.com/bobdivx/popcorn-server
+      - RUNNER_NAME=casaos-runner-popcorn-server
+      - RUNNER_REPLACE_EXISTING=true
+      - TZ=Europe/Paris
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /media/Docker/AppData/runner/server:/shared-data
+      - /media/Docker/AppData/runner/buildx:/home/runner/.docker/buildx
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+
+  runner-tauri:
+    image: ghcr.io/bobdivx/popcorn-github-runner-server:latest
+    container_name: github-runner-tauri
+    environment:
+      - ACCESS_TOKEN=${ACCESS_TOKEN_TAURI}
+      - REPO_URL=https://github.com/bobdivx/popcorn-tauri
+      - RUNNER_NAME=casaos-runner-popcorn-tauri
+      - RUNNER_REPLACE_EXISTING=true
+      - TZ=Europe/Paris
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /media/Docker/AppData/runner/tauri:/shared-data
+      - /media/Docker/AppData/runner/npm:/home/runner/.npm
+      - /media/Docker/AppData/runner/cargo:/home/runner/.cargo
+      - /media/Docker/AppData/runner/rustup:/home/runner/.rustup
+      - /media/Docker/AppData/runner/registry:/opt/cargo/registry
+    restart: unless-stopped
+    privileged: true
+

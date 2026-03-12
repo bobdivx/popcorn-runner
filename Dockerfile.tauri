@@ -1,0 +1,40 @@
+FROM ghcr.io/myoung34/github-runner:latest
+
+USER root
+
+ENV ANDROID_HOME=/opt/android-sdk \
+    ANDROID_SDK_ROOT=/opt/android-sdk \
+    CARGO_HOME=/home/runner/.cargo \
+    RUSTUP_HOME=/home/runner/.rustup \
+    PATH=/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/tools:/home/runner/.cargo/bin:$PATH
+
+RUN apt-get update && apt-get install -y \
+    curl unzip zip git openjdk-17-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installer Rust et les cibles Android
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain stable && \
+    . "$HOME/.cargo/env" && \
+    rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android
+
+# Installer Tauri CLI globalement
+RUN . "$HOME/.cargo/env" && cargo install tauri-cli
+
+# Installer le SDK / NDK Android dans /opt/android-sdk
+RUN mkdir -p /opt/android-sdk && \
+    cd /opt/android-sdk && \
+    curl -o sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip && \
+    mkdir -p cmdline-tools/latest && \
+    unzip -q sdk.zip -d cmdline-tools && \
+    mv cmdline-tools/cmdline-tools/* cmdline-tools/latest/ && \
+    rm -rf sdk.zip && \
+    yes | cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk \
+      "platform-tools" \
+      "build-tools;35.0.0" \
+      "platforms;android-35" \
+      "ndk;25.2.9519653"
+
+RUN chown -R runner:runner /opt/android-sdk /home/runner/.cargo /home/runner/.rustup
+
+USER runner
+

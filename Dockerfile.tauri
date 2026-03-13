@@ -14,11 +14,11 @@ RUN apt-get update && apt-get install -y \
 
 # Installer Rust et les cibles Android
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain stable && \
-    . "/root/.cargo/env" && \
+    . "/home/runner/.cargo/env" && \
     rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android
 
 # Installer Tauri CLI globalement
-RUN . "$HOME/.cargo/env" && cargo install tauri-cli
+RUN . "/home/runner/.cargo/env" && cargo install tauri-cli
 
 # Installer le SDK / NDK Android dans /opt/android-sdk
 RUN mkdir -p /opt/android-sdk && \

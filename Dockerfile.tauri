@@ -28,7 +28,7 @@ RUN mkdir -p /opt/android-sdk && \
     unzip -q sdk.zip -d cmdline-tools && \
     mv cmdline-tools/cmdline-tools/* cmdline-tools/latest/ && \
     rm -rf sdk.zip && \
-    yes | cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --licenses >/dev/null && \
+    (yes 2>/dev/null | cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --licenses >/dev/null) || true && \
     cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk \
       "platform-tools" \
       "build-tools;35.0.0" \

@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM myoung34/github-runner:latest
 
 USER root
@@ -8,9 +9,10 @@ ENV ANDROID_HOME=/opt/android-sdk \
     RUSTUP_HOME=/home/runner/.rustup \
     PATH=/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/tools:/home/runner/.cargo/bin:$PATH
 
-RUN apt-get update && apt-get install -y \
-    curl unzip zip git openjdk-17-jdk \
-    && rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y \
+    curl unzip zip git openjdk-17-jdk
 
 # Installer Rust et les cibles Android
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain stable && \

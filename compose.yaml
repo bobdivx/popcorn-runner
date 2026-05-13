@@ -34,6 +34,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /media/Docker/AppData/runner/server:/shared-data
+      - /media/Docker/AppData/runner/npm:/home/runner/.npm
+      - /media/Docker/AppData/runner/cargo:/home/runner/.cargo
+      - /media/Docker/AppData/runner/rustup:/home/runner/.rustup
+      - /media/Docker/AppData/runner/registry:/opt/cargo/registry
       - /media/Docker/AppData/runner/buildx:/home/runner/.docker/buildx
     restart: unless-stopped
     privileged: true

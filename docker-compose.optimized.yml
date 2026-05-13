@@ -1,0 +1,150 @@
+name: github-runners
+services:
+  runner-client:
+    cpu_shares: 90
+    container_name: github-runner-client
+    deploy:
+      resources:
+        limits:
+          memory: "33487564800"
+        reservations:
+          memory: "134217728"
+    environment:
+      - ACCESS_TOKEN=${GITHUB_PAT}
+      - ANDROID_HOME=/opt/android-sdk
+      - ANDROID_SDK_ROOT=/opt/android-sdk
+      - PATH=/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/tools:/opt/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - REPO_URL=https://github.com/bobdivx/popcorn-client
+      - RUNNER_NAME=casaos-runner-popcorn-client
+      - RUNNER_REPLACE_EXISTING=true
+      - TZ=Europe/Paris
+    image: ghcr.io/bobdivx/popcorn-github-runner-client:latest
+    labels:
+      com.casaos.app_id: github-runners
+      icon: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+      com.centurylinklabs.watchtower.enable: "false"
+    privileged: true
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /media/Docker/AppData/runner/client:/shared-data
+      - /media/Docker/AppData/runner/npm:/home/runner/.npm
+      - /media/Docker/AppData/runner/registry:/opt/cargo/registry
+    network_mode: bridge
+    x-casaos:
+      volumes:
+        - container: /shared-data
+          description:
+            en_us: Shared data for builds
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  runner-server:
+    cpu_shares: 90
+    container_name: github-runner-server
+    deploy:
+      resources:
+        limits:
+          memory: "33487564800"
+        reservations:
+          memory: "134217728"
+    environment:
+      - ACCESS_TOKEN=${GITHUB_PAT}
+      - REPO_URL=https://github.com/bobdivx/popcorn-server
+      - RUNNER_NAME=casaos-runner-popcorn-server
+      - RUNNER_REPLACE_EXISTING=true
+      - TZ=Europe/Paris
+    image: ghcr.io/bobdivx/popcorn-github-runner-server:latest
+    labels:
+      com.casaos.app_id: github-runners
+      icon: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+      com.centurylinklabs.watchtower.enable: "false"
+    privileged: true
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /media/Docker/AppData/runner/server:/shared-data
+      - /media/Docker/AppData/runner/buildx:/home/runner/.docker/buildx
+      - /media/Docker/AppData/runner/npm:/home/runner/.npm
+      - /media/Docker/AppData/runner/registry:/opt/cargo/registry
+    network_mode: host
+    x-casaos:
+      volumes:
+        - container: /shared-data
+          description:
+            en_us: Shared data for builds
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  runner-tauri:
+    cpu_shares: 90
+    container_name: github-runner-tauri
+    deploy:
+      resources:
+        limits:
+          memory: "33487564800"
+        reservations:
+          memory: "134217728"
+    environment:
+      - ACCESS_TOKEN=${GITHUB_PAT}
+      - REPO_URL=https://github.com/bobdivx/popcorn-tauri
+      - RUNNER_NAME=casaos-runner-popcorn-tauri
+      - RUNNER_REPLACE_EXISTING=true
+      - TZ=Europe/Paris
+    image: ghcr.io/bobdivx/popcorn-github-runner-server:latest
+    labels:
+      com.casaos.app_id: github-runners
+      icon: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+      com.centurylinklabs.watchtower.enable: "false"
+    privileged: true
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /media/Docker/AppData/runner/tauri:/shared-data
+      - /media/Docker/AppData/runner/npm:/home/runner/.npm
+      - /media/Docker/AppData/runner/registry:/opt/cargo/registry
+    network_mode: bridge
+    x-casaos:
+      volumes:
+        - container: /shared-data
+          description:
+            en_us: Shared data for builds
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  runner-client:
+    name: runner-client
+  runner-tauri:
+    name: runner-tauri
+
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  author: GitHub
+  category: Development
+  description:
+    en_us: High-performance self-hosted GitHub Runners for Popcorn.
+    fr_fr: Runners GitHub auto-hébergés haute performance pour Popcorn.
+  developer: GitHub
+  hostname: zimacube.local
+  icon: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  index: /
+  is_uncontrolled: false
+  main: runner-client
+  port_map: ""
+  scheme: http
+  store_app_id: github-runners-combined
+  title:
+    custom: ""
+    en_us: GitHub Runners Optimisés (Popcorn)

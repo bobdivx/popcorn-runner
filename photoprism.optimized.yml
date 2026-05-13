@@ -1,0 +1,85 @@
+name: photoprism
+services:
+  photoprism:
+    cpu_shares: 90
+    command: []
+    container_name: photoprism
+    deploy:
+      resources:
+        limits:
+          memory: "33487564800"
+        reservations:
+          memory: "536870912"
+          devices: []
+    environment:
+      - PHOTOPRISM_ADMIN_PASSWORD=casaos
+      - PHOTOPRISM_UPLOAD_NSFW=true
+      - TZ=Europe/Paris
+    image: photoprism/photoprism:250228
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/PhotoPrism/icon.png
+    ports:
+      - target: 2342
+        published: "2342"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /DATA/AppData/photoprism/photoprism/storage
+        target: /photoprism/storage
+      - type: bind
+        source: /media/Photos
+        target: /photoprism/originals
+    x-casaos:
+      envs:
+        - container: TZ
+          description:
+            en_us: TimeZone
+            zh_cn: 时区
+        - container: PHOTOPRISM_UPLOAD_NSFW
+          description:
+            en_us: true or false, is it possible to upload NSFW
+            zh_cn: true 或 false，是否允许上传 NSFW
+        - container: PHOTOPRISM_ADMIN_PASSWORD
+          description:
+            en_us: The password of admin
+            zh_cn: 管理员密码
+      ports:
+        - container: "2342"
+          description:
+            en_us: WebUI HTTP Port
+            zh_cn: WebUI HTTP 端口
+      volumes:
+        - container: /photoprism/storage
+          description:
+            en_us: PhotoPrism storage directory.
+            zh_cn: PhotoPrism 存储目录
+        - container: /photoprism/originals
+          description:
+            en_us: PhotoPrism originals directory.
+            zh_cn: PhotoPrism 原始文件目录
+    devices: []
+    cap_add: []
+    network_mode: bridge
+    privileged: false
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  author: CasaOS Team
+  category: Gallery
+  description:
+    en_us: Your AI-Powered Photos App for the Decentralized Web. PhotoPrism brings the magic of AI to your home TV, phone, and multiple devices, revolutionizing the way you manage and share your photos.
+    fr_fr: PhotoPrism® est une application alimentée par l'IA pour parcourir, organiser et partager votre collection de photos. Il utilise les dernières technologies pour étiqueter et trouver des photos automatiquement sans vous déranger.
+  developer: PhotoPrism
+  hostname: ""
+  icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/PhotoPrism/icon.png
+  index: /
+  is_uncontrolled: false
+  main: photoprism
+  port_map: "2342"
+  scheme: http
+  store_app_id: photoprism
+  title:
+    custom: ""
+    en_us: PhotoPrism

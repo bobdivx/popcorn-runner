@@ -1,0 +1,74 @@
+name: forge
+services:
+  forge:
+    container_name: forge
+    image: bobdivx/forge:dev
+    restart: unless-stopped
+    privileged: true
+    pull_policy: always
+    environment:
+      - ASTRO_DATABASE_FILE=file:/app/.astro/content.db
+      - HOST=0.0.0.0
+      - NODE_ENV=production
+      - OLLAMA_HOST=
+      - PORT=4321
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - target: 4321
+        published: "4331"
+        protocol: tcp
+      - target: 4332
+        published: "4332"
+        protocol: tcp
+      - target: 4333
+        published: "4333"
+        protocol: tcp
+      - target: 4334
+        published: "4334"
+        protocol: tcp
+    volumes:
+      - /media/Docker/AppData/forge/astro:/app/.astro
+      - /media/Docker/AppData/forge/data:/app/.data
+      - /media/Docker/AppData:/mnt/Docker
+      - /media/Docker/yaml:/mnt/yaml
+      - /media/GitHub:/mnt/GitHub
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:4321/login >/dev/null || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - forge-net
+    labels:
+      icon: https://forge.briseteia.me/brand/logo.png
+      org.opencontainers.image.source: https://github.com/bobdivx/Forge
+      org.opencontainers.image.url: https://hub.docker.com/r/bobdivx/forge
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  forge-net:
+    name: forge-net
+
+x-casaos:
+  main: forge
+  title:
+    custom: Forge (NAS)
+    en_us: Forge (NAS)
+  icon: https://forge.briseteia.me/brand/logo.png
+  category: Development
+  author: Forge
+  hostname: ""
+  index: /
+  port_map: "4331"
+  scheme: http
+  store_app_id: forge
+  architectures:
+    - amd64
+    - arm64

@@ -1,0 +1,38 @@
+name: watchtower
+services:
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_NOTIFICATIONS=slack
+      - WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL=${SLACK_WEBHOOK_URL}
+      - WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER=ZimaCube-NAS
+      - WATCHTOWER_NOTIFICATION_REPORT_LEVEL=all
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_HTTP_API_UPDATE=true
+      - WATCHTOWER_HTTP_API_TOKEN=631594c02cade7e98ae18ac017581400
+      - TZ=Europe/Paris
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Watchtower/icon.png
+    command: --cleanup --interval 3600
+    x-casaos:
+      envs:
+        - container: WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER
+          description: { en_us: "Name of the NAS in Slack messages" }
+x-casaos:
+  architectures: [amd64, arm64]
+  author: CasaOS Team
+  category: Utilities
+  description:
+    en_us: "Watchtower is a process for automating Docker container base image updates."
+    fr_fr: "Watchtower automatise la mise à jour de vos conteneurs Docker avec notifications Slack."
+  developer: containrrr
+  icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Watchtower/icon.png
+  main: watchtower
+  store_app_id: watchtower
+  title:
+    custom: ""
+    en_us: Watchtower (Watchdog)

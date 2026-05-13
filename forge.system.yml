@@ -1,0 +1,33 @@
+name: forge
+services:
+  forge:
+    container_name: forge
+    image: bobdivx/forge:dev
+    restart: unless-stopped
+    privileged: true
+    environment:
+      - PORT=4321
+    ports:
+      - target: 4321
+        published: "4331"
+        protocol: tcp
+    volumes:
+      - /media/Docker/AppData/forge/astro:/app/.astro
+      - /media/Docker/AppData/forge/data:/app/.data
+      - /var/run/docker.sock:/var/run/docker.sock
+    x-casaos:
+      ports:
+        - container: "4321"
+          description:
+            en_us: WebUI Port
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  author: Forge Team
+  category: Development
+  icon: https://forge.briseteia.me/brand/logo.png
+  main: forge
+  store_app_id: forge
+  title:
+    en_us: Forge (NAS)

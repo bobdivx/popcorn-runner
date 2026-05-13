@@ -1,0 +1,152 @@
+name: popcornn-nvidia
+services:
+  client:
+    container_name: popcornn-client
+    image: bobdivx/popcorn-frontend:latest
+    restart: unless-stopped
+    environment:
+      - BACKEND_URL=http://server:3000
+      - HOST=0.0.0.0
+      - NODE_ENV=production
+      - PGID=1000
+      - PORT=80
+      - PUBLIC_BACKEND_URL=
+      - PUBLIC_CLIENT_URL=
+      - PUID=1000
+      - TZ=Europe/Paris
+    ports:
+      - target: 80
+        published: "4325"
+        protocol: tcp
+    networks:
+      - popcornn-network
+    labels:
+      com.casaos.app_id: popcornn-nvidia
+      icon: https://popcornn.app/popcorn_logo.png
+    x-casaos:
+      envs:
+        - container: TZ
+          description:
+            en_us: TimeZone
+      ports:
+        - container: "80"
+          description:
+            en_us: Frontend WebUI
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  server:
+    container_name: popcornn-server
+    image: bobdivx/popcorn-backend:nvidia
+    restart: unless-stopped
+    environment:
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - API_PASSWORD=popcorn_password_secure
+      - API_USERNAME=admin
+      - RUST_LOG=info
+      - TZ=Europe/Paris
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=3000
+      - DOWNLOAD_DIR=/app/downloads
+      - LOG_LEVEL=info
+      - PUID=1000
+      - PGID=1000
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        limits:
+          memory: "33487564800"
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+    ports:
+      - target: 3000
+        published: "3000"
+        protocol: tcp
+      - target: 4240
+        published: "4240"
+        protocol: tcp
+    volumes:
+      - /media/Docker/AppData/popcornn:/app/.data
+      - /media/Media/Popcorn/media:/app/downloads
+      - /media/Media/Popcorn/streaming:/app/downloads/transcode_cache
+      - /media/Media/Movies:/app/downloads/zimaos
+    networks:
+      - popcornn-network
+    labels:
+      com.casaos.app_id: popcornn-nvidia
+      icon: https://popcornn.app/popcorn_logo.png
+    x-casaos:
+      envs:
+        - container: TZ
+          description:
+            en_us: TimeZone
+      ports:
+        - container: "3000"
+          description:
+            en_us: Backend API Port
+        - container: "4240"
+          description:
+            en_us: BitTorrent Port
+      volumes:
+        - container: /app/.data
+          description:
+            en_us: Popcorn data and database
+        - container: /app/downloads
+          description:
+            en_us: Downloads and media directory
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  flaresolverr:
+    container_name: popcornn-flaresolverr
+    image: flaresolverr/flaresolverr:latest
+    restart: unless-stopped
+    ports:
+      - target: 9191
+        published: "9191"
+        protocol: tcp
+    networks:
+      - popcornn-network
+    labels:
+      com.casaos.app_id: popcornn-nvidia
+      icon: https://popcornn.app/popcorn_logo.png
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  popcornn-network:
+    name: popcornn-network
+
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  author: Popcorn Team
+  category: Media
+  description:
+    en_us: Popcorn is your ultimate AI-powered media center.
+    fr_fr: Popcorn est votre centre multimédia ultime propulsé par l'IA.
+  developer: Popcorn Team
+  hostname: ""
+  icon: https://popcornn.app/popcorn_logo.png
+  index: /
+  is_uncontrolled: false
+  main: client
+  port_map: "4325"
+  scheme: http
+  store_app_id: popcornn-nvidia
+  title:
+    custom: ""
+    en_us: Popcorn NVIDIA

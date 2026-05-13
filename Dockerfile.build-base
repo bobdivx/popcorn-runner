@@ -1,0 +1,22 @@
+# syntax=docker/dockerfile:1
+FROM rust:latest
+
+# Installation des dépendances système nécessaires au build de popcorn-server
+# On les met ici pour qu'elles ne soient JAMAIS re-téléchargées pendant le build du serveur
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl-dev \
+    pkg-config \
+    curl \
+    ffmpeg \
+    libva-dev \
+    libdrm-dev \
+    jq \
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
+
+# Pré-installation de cargo-chef pour gagner ~2 minutes à chaque build
+RUN cargo install cargo-chef --locked
+
+WORKDIR /app
